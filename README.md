@@ -1,20 +1,49 @@
-# Stride — Self-Hosted Fitness Tracker
+# Stride — Your training, tracked by you
 
-A private, offline-first fitness tracker for Android. No account, no cloud, no ads —
-all data stays on your phone.
+Stride is a **private, offline-first fitness tracker for Android**. No account, no
+sign-up, no cloud, no ads, no subscriptions — every step, workout, and stat stays
+on your phone and yours alone.
 
-**Android app** (`android/`) — native WebView shell + foreground service that counts
-steps all day using the hardware step-counter sensor (works even with the screen off),
-with accelerometer fallback. GPS workout tracking, installable APK.
+## What it does
 
-**Web app** (`web/`) — the same tracker as an installable PWA: sensor step counting,
-GPS run/walk/ride workouts with route maps, manual exercise logging, goal ring,
-weekly charts, 14-day history, JSON export/import. Run it with any static server.
+- **All-day step counting** — counts your steps in the background, even with the
+  screen off, using your phone's hardware step-counter sensor (accelerometer
+  fallback on phones that lack one). A small persistent notification shows the
+  step service is running.
+- **GPS workouts** — track walks, runs, rides, and gym sessions with live
+  distance, pace, duration, and calories, plus a map of the route you took.
+- **Manual exercise log** — log strength training or anything else with duration
+  and intensity.
+- **Goal ring & daily stats** — set a daily step goal and watch the ring fill;
+  see steps, distance, active minutes, and calories at a glance.
+- **Weekly charts & 14-day history** — trends for steps, workouts, and calories.
+- **Export / import** — back up everything as JSON and restore it anytime.
 
-## Download
+## How it works
 
-Grab the latest APK from [**Releases**](https://github.com/kolanukondaisaaceliot-hue/stride/releases) — install it directly
-on your phone (allow "Install unknown apps" when prompted).
+The Android app is a native shell (WebView) around the tracker, plus a
+**foreground service** that reads the hardware `TYPE_STEP_COUNTER` sensor — that
+is what keeps counting steps with the screen off. Phones without the hardware
+counter fall back to accelerometer-based peak detection. GPS workouts use your
+phone's location sensor.
+
+All data is stored locally on the device. Nothing is ever uploaded, because there
+is no server to upload it to.
+
+The same tracker is also available as an installable **web app (PWA)** in `web/`
+— host it on any static server and add it to your home screen.
+
+## Download & install
+
+1. Go to [**Releases**](https://github.com/kolanukondaisaaceliot-hue/stride/releases)
+   and download the latest `stride.apk`.
+2. Open the file on your phone. Android will ask you to allow "Install unknown
+   apps" for your browser or file manager — allow it once.
+3. Open Stride, grant motion and location permissions when asked, and start moving.
+
+Permissions used, and why: activity recognition + motion sensors (step counting),
+location (GPS workouts), foreground service (step counting with the screen off),
+boot completed (restart step counting after a reboot).
 
 ## Build the APK yourself
 
