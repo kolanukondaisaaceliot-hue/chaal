@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Stride — Fitness Tracker</title>
+<meta name="description" content="Stride is a self-hosted, private fitness tracker. Counts steps with your phone's motion sensors and tracks runs, walks and rides with GPS. Your data never leaves your device.">
+<meta name="theme-color" content="#07090d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Splash -->
+<div id="splash">
+  <div class="splash-mark">S</div>
+  <div class="splash-name">STRIDE</div>
+</div>
+
+<!-- Onboarding -->
+<div id="onboarding" hidden>
+  <div class="ob-track">
+    <section class="ob-slide" data-slide="0">
+      <div class="ob-mark">S</div>
+      <h1>Your training,<br>tracked by <span class="lime">you</span>.</h1>
+      <p class="ob-sub">Stride counts your steps with your phone's motion sensors, maps your runs and walks with GPS, and keeps every byte of data on your device. No account. No cloud. No ads.</p>
+      <ul class="ob-points">
+        <li><span class="ob-ico">◉</span> Sensor-powered step counting</li>
+        <li><span class="ob-ico">◉</span> GPS run / walk / ride tracking</li>
+        <li><span class="ob-ico">◉</span> Works offline, installs like an app</li>
+      </ul>
+    </section>
+    <section class="ob-slide" data-slide="1">
+      <h1>Enable <span class="lime">sensors</span></h1>
+      <p class="ob-sub">Stride needs two permissions to do its job. Nothing is uploaded anywhere.</p>
+      <div class="perm-card">
+        <div class="perm-info">
+          <div class="perm-title">Motion sensors</div>
+          <div class="perm-desc">Accelerometer access counts your steps all day.</div>
+        </div>
+        <button class="btn btn-small" id="permMotion">Enable</button>
+      </div>
+      <div class="perm-status" id="motionStatus">Not enabled yet</div>
+      <div class="perm-card">
+        <div class="perm-info">
+          <div class="perm-title">Location</div>
+          <div class="perm-desc">GPS maps distance, pace and route during workouts.</div>
+        </div>
+        <button class="btn btn-small" id="permLocation">Enable</button>
+      </div>
+      <div class="perm-status" id="locStatus">Not enabled yet</div>
+      <p class="ob-note">You can skip for now and enable later in Settings.</p>
+    </section>
+    <section class="ob-slide" data-slide="2">
+      <h1>Set your <span class="lime">baseline</span></h1>
+      <p class="ob-sub">You can change these any time in Settings.</p>
+      <label class="field"><span>Daily step goal</span>
+        <input type="number" id="obGoal" value="10000" min="1000" max="50000" step="500" inputmode="numeric">
+      </label>
+      <label class="field"><span>Body weight (kg) <em>— for calorie estimates</em></span>
+        <input type="number" id="obWeight" value="70" min="30" max="200" inputmode="decimal">
+      </label>
+      <label class="field"><span>Step detection sensitivity</span>
+        <select id="obSens">
+          <option value="low">Low — fewer false steps</option>
+          <option value="medium" selected>Medium — balanced</option>
+          <option value="high">High — catches light steps</option>
+        </select>
+      </label>
+    </section>
+  </div>
+  <div class="ob-footer">
+    <div class="ob-dots"><span class="on"></span><span></span><span></span></div>
+    <div class="ob-nav">
+      <button class="btn btn-ghost" id="obBack" disabled>Back</button>
+      <button class="btn" id="obNext">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app" hidden>
+  <header id="topbar">
+    <div class="brand"><span class="brand-mark">S</span> STRIDE</div>
+    <div class="top-right">
+      <div id="todayDate" class="date"></div>
+      <button id="sensorPill" class="pill" title="Step counter status"><span class="dot"></span><span id="pillText">Starting…</span></button>
+    </div>
+  </header>
+
+  <main id="screens">
+
+    <!-- HOME -->
+    <section class="screen active" id="screen-home">
+      <div class="card hero">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 200 200" class="ring">
+            <circle cx="100" cy="100" r="84" class="ring-bg"/>
+            <circle cx="100" cy="100" r="84" class="ring-fg" id="ringFg"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-steps" id="stepsNow">0</div>
+            <div class="ring-label">steps</div>
+            <div class="ring-goal" id="goalSub">of 10,000 goal</div>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hs-val" id="statDist">0</div><div class="hs-lbl">km</div></div>
+          <div class="hs-div"></div>
+          <div><div class="hs-val" id="statCal">0</div><div class="hs-lbl">kcal</div></div>
+          <div class="hs-div"></div>
+          <div><div class="hs-val" id="statActive">0</div><div class="hs-lbl">active min</div></div>
+        </div>
+      </div>
+
+      <button class="btn btn-big" id="btnStartWorkout">
+        <span class="btn-ico">▶</span> Start a workout
+      </button>
+
+      <div class="card">
+        <div class="card-title">This week <span class="card-link" data-goto="history">Details →</span></div>
+        <canvas id="weekMini" height="120"></canvas>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Today's workouts</div>
+        <div id="todayWorkouts" class="empty-note">No workouts yet today. Hit Start and go move.</div>
+      </div>
+    </section>
+
+    <!-- WORKOUT -->
+    <section class="screen" id="screen-workout">
+      <div id="workoutIdle">
+        <div class="card">
+          <div class="card-title">Choose workout</div>
+          <div class="chips" id="wtypeChips">
+            <button class="chip on" data-type="walk">🚶 Walk</button>
+            <button class="chip" data-type="run">🏃 Run</button>
+            <button class="chip" data-type="cycle">🚴 Ride</button>
+            <button class="chip" data-type="gym">🏋️ Gym</button>
+          </div>
+          <p class="hint">GPS tracks distance, pace and route for walk / run / ride. Keep the app open and the screen on — Stride will hold a wake lock.</p>
+          <button class="btn btn-big btn-go" id="workoutStart">Start</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Last workout</div>
+          <div id="lastWorkout" class="empty-note">Nothing logged yet.</div>
+        </div>
+      </div>
+
+      <div id="workoutActive" hidden>
+        <div class="card live-card">
+          <div class="live-head"><span class="live-dot"></span><span id="wTypeLabel">RUN</span><span id="wGpsState" class="gps-state">GPS…</span></div>
+          <div class="w-time" id="wTime">00:00</div>
+          <div class="w-grid">
+            <div><div class="w-val" id="wDist">0.00</div><div class="w-lbl">km</div></div>
+            <div><div class="w-val" id="wPace">–</div><div class="w-lbl">min/km</div></div>
+            <div><div class="w-val" id="wSteps">0</div><div class="w-lbl">steps</div></div>
+            <div><div class="w-val" id="wCal">0</div><div class="w-lbl">kcal</div></div>
+          </div>
+          <canvas id="routeMap"></canvas>
+          <div class="w-controls">
+            <button class="btn btn-ghost" id="btnPause">Pause</button>
+            <button class="btn btn-danger" id="btnEnd">Finish</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="workoutSummary" class="sheet" hidden>
+        <div class="sheet-card">
+          <div class="card-title">Workout complete 🎉</div>
+          <div id="sumStats" class="sum-grid"></div>
+          <canvas id="sumMap"></canvas>
+          <div class="w-controls">
+            <button class="btn btn-ghost" id="btnDiscardWorkout">Discard</button>
+            <button class="btn" id="btnSaveWorkout">Save workout</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="screen" id="screen-history">
+      <div class="card">
+        <div class="chips" id="metricChips">
+          <button class="chip on" data-metric="steps">Steps</button>
+          <button class="chip" data-metric="distanceKm">Distance</button>
+          <button class="chip" data-metric="calories">Calories</button>
+        </div>
+        <canvas id="weekChart" height="170"></canvas>
+        <div class="chart-total" id="chartTotal"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Daily totals</div>
+        <div id="dayList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Workout history</div>
+        <div id="workoutList"><div class="empty-note">No workouts recorded yet.</div></div>
+      </div>
+    </section>
+
+    <!-- LOG -->
+    <section class="screen" id="screen-log">
+      <div class="card">
+        <div class="card-title">Log exercise manually</div>
+        <p class="hint">For gym sessions, yoga, swimming — anything the sensors can't see.</p>
+        <label class="field"><span>Exercise</span>
+          <select id="logType">
+            <option value="strength">Strength training</option>
+            <option value="yoga">Yoga</option>
+            <option value="swimming">Swimming</option>
+            <option value="cycling">Cycling (indoor)</option>
+            <option value="hiit">HIIT / Crossfit</option>
+            <option value="sports">Sports (football, etc.)</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <div class="field-row">
+          <label class="field"><span>Minutes</span>
+            <input type="number" id="logDur" value="30" min="1" max="600" inputmode="numeric">
+          </label>
+          <label class="field"><span>Intensity</span>
+            <select id="logIntensity">
+              <option value="light">Light</option>
+              <option value="moderate" selected>Moderate</option>
+              <option value="hard">Hard</option>
+            </select>
+          </label>
+        </div>
+        <button class="btn btn-big" id="logSave">Log exercise</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Logged today</div>
+        <div id="logList"><div class="empty-note">Nothing logged manually today.</div></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="screen" id="screen-settings">
+      <div class="card">
+        <div class="card-title">Profile</div>
+        <label class="field"><span>Daily step goal</span>
+          <input type="number" id="setGoal" min="1000" max="50000" step="500" inputmode="numeric">
+        </label>
+        <div class="field-row">
+          <label class="field"><span>Weight (kg)</span>
+            <input type="number" id="setWeight" min="30" max="200" inputmode="decimal">
+          </label>
+          <label class="field"><span>Height (cm)</span>
+            <input type="number" id="setHeight" min="120" max="230" inputmode="numeric" placeholder="—">
+          </label>
+        </div>
+        <label class="field"><span>Step detection sensitivity</span>
+          <select id="setSens">
+            <option value="low">Low — fewer false steps</option>
+            <option value="medium">Medium — balanced</option>
+            <option value="high">High — catches light steps</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Permissions</div>
+        <div class="perm-row"><div><b>Motion sensors</b><div class="perm-status" id="motionStatus2">—</div></div><button class="btn btn-small" id="permMotion2">Enable</button></div>
+        <div class="perm-row"><div><b>Location</b><div class="perm-status" id="locStatus2">—</div></div><button class="btn btn-small" id="permLocation2">Enable</button></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">App</div>
+        <button class="btn btn-ghost btn-block" id="installBtn" hidden>⬇ Install Stride on this phone</button>
+        <div class="btn-row">
+          <button class="btn btn-ghost" id="exportBtn">Export data</button>
+          <button class="btn btn-ghost" id="importBtn">Import</button>
+          <input type="file" id="importFile" accept="application/json" hidden>
+        </div>
+        <button class="btn btn-danger btn-block" id="eraseBtn">Erase all data</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Good to know</div>
+        <div class="faq">
+          <details><summary>Does it count steps in the background?</summary><p>Web apps can't run motion sensors when closed or when the phone is locked — that's an Android limitation, not a Stride one. Keep Stride open (it holds your screen on during workouts) and it counts everything. For 24/7 background counting you'd need a native app like Google Fit.</p></details>
+          <details><summary>Where is my data?</summary><p>Only on this phone, in the app's private storage. There is no server, no account, nothing uploaded. Export a JSON backup any time.</p></details>
+          <details><summary>Why does step counting need the screen on?</summary><p>Android pauses sensor access for web pages when the screen turns off. During workouts Stride requests a wake lock so the screen stays on.</p></details>
+          <details><summary>How accurate is it?</summary><p>Step counting uses peak detection on the accelerometer — good for walking and running, roughly ±10%. GPS distance is accurate outdoors with a clear sky. Calorie numbers are estimates.</p></details>
+        </div>
+      </div>
+      <div class="version" id="appVersion">Stride v1.0 · self-hosted · your data stays on your phone</div>
+    </section>
+  </main>
+
+  <nav id="tabbar">
+    <button class="tab on" data-screen="home"><span class="tab-ico">◉</span><span>Today</span></button>
+    <button class="tab" data-screen="workout"><span class="tab-ico">▶</span><span>Workout</span></button>
+    <button class="tab" data-screen="history"><span class="tab-ico">▦</span><span>Activity</span></button>
+    <button class="tab" data-screen="log"><span class="tab-ico">✚</span><span>Log</span></button>
+    <button class="tab" data-screen="settings"><span class="tab-ico">⚙</span><span>Settings</span></button>
+  </nav>
+</div>
+
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
