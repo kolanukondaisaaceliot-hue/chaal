@@ -1,4 +1,4 @@
-# Stride — Self-Hosted Fitness Tracker
+# Chaal — Self-Hosted Fitness Tracker
 
 A private, offline-first fitness tracker that runs as an installable web app on
 your Android phone. No account, no cloud, no ads — all data stays on your device
@@ -24,7 +24,7 @@ in localStorage.
 1. Deploy this folder to Netlify (drag-drop on app.netlify.com while logged in).
 2. Open the `https://…netlify.app` URL in Chrome on your phone.
 3. Chrome menu (⋮) → **Add to Home screen** (or **Install app**).
-4. Open Stride from the home screen, enable Motion + Location when asked.
+4. Open Chaal from the home screen, enable Motion + Location when asked.
 
 **Option B — any static host**
 Any static host with HTTPS works (GitHub Pages, Cloudflare Pages, your own
@@ -42,7 +42,7 @@ Add to Home screen.
 - **HTTPS is required** for motion sensors and geolocation in Chrome. `localhost`
   also counts as secure.
 - **Web apps can't count steps in the background** when closed or when the phone
-  is locked (Android limitation). Keep Stride open while you move; it holds a
+  is locked (Android limitation). Keep Chaal open while you move; it holds a
   wake lock during workouts.
 - If the browser blocks the motion sensor, tap the lock/tune icon in Chrome's
   address bar → Site settings → Motion sensors → Allow.

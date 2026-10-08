@@ -197,3 +197,38 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
 @media (min-width:560px){
   #screens{padding-left:24px;padding-right:24px}
 }
+
+/* ---------- v1.1: streaks, achievements, share, voice, custom types ---------- */
+.streak-bar{display:flex;align-items:center;justify-content:center;gap:14px;
+  background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);
+  border-radius:14px;padding:12px 16px;margin-bottom:14px;font-size:14px;color:var(--mut)}
+.streak-bar[hidden]{display:none}
+.streak-bar b{color:var(--txt)}
+.streak-div{width:1px;height:20px;background:var(--line)}
+
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ach{background:#0a0f16;border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center}
+.ach-ico{font-size:30px;margin-bottom:6px;filter:grayscale(1);opacity:.35}
+.ach.un .ach-ico{filter:none;opacity:1}
+.ach-name{font-size:12px;font-weight:700}
+.ach-desc{font-size:10.5px;color:var(--dim);margin-top:4px;line-height:1.4}
+.ach-date{font-size:10px;color:var(--lime);margin-top:6px;font-weight:600}
+.ach.un{border-color:rgba(200,245,66,.35);box-shadow:0 4px 18px rgba(200,245,66,.08)}
+.ach.lock .ach-name{color:var(--dim)}
+
+.share-btn{background:var(--card2);border:1px solid var(--line);color:var(--lime);
+  border-radius:10px;width:32px;height:32px;font-size:15px;cursor:pointer;margin-left:auto}
+
+.switch{position:relative;display:inline-block;width:52px;height:30px;flex:0 0 auto;cursor:pointer}
+.switch input{opacity:0;width:0;height:0}
+.switch .knob{position:absolute;inset:0;background:#1d2634;border:1px solid var(--line);border-radius:99px;transition:.2s}
+.switch .knob::before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;background:var(--mut);border-radius:99px;transition:.2s}
+.switch input:checked + .knob{background:rgba(200,245,66,.25);border-color:var(--lime)}
+.switch input:checked + .knob::before{transform:translateX(22px);background:var(--lime)}
+
+.type-row{display:flex;align-items:center;justify-content:space-between;padding:10px 2px;border-bottom:1px solid var(--line);font-size:14px}
+.type-row:last-child{border:0}
+.type-row small{color:var(--dim)}
+.check-field{display:flex;align-items:flex-end}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--txt);background:#0a0f16;border:1px solid var(--line);border-radius:12px;padding:13px 14px;width:100%;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--lime)}

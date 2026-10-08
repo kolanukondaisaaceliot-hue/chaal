@@ -1,10 +1,11 @@
-/* Stride service worker — offline-first cache */
-const CACHE = 'stride-v1';
+/* Chaal service worker — offline-first cache */
+const CACHE = 'chaal-v1';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
+  './features.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>Stride — Fitness Tracker</title>
-<meta name="description" content="Stride is a self-hosted, private fitness tracker. Counts steps with your phone's motion sensors and tracks runs, walks and rides with GPS. Your data never leaves your device.">
+<title>Chaal — Fitness Tracker</title>
+<meta name="description" content="Chaal is a self-hosted, private fitness tracker. Counts steps with your phone's motion sensors and tracks runs, walks and rides with GPS. Your data never leaves your device.">
 <meta name="theme-color" content="#07090d">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
@@ -18,7 +18,7 @@
 <!-- Splash -->
 <div id="splash">
   <div class="splash-mark">S</div>
-  <div class="splash-name">STRIDE</div>
+  <div class="splash-name">CHAAL</div>
 </div>
 
 <!-- Onboarding -->
@@ -27,7 +27,7 @@
     <section class="ob-slide" data-slide="0">
       <div class="ob-mark">S</div>
       <h1>Your training,<br>tracked by <span class="lime">you</span>.</h1>
-      <p class="ob-sub">Stride counts your steps with your phone's motion sensors, maps your runs and walks with GPS, and keeps every byte of data on your device. No account. No cloud. No ads.</p>
+      <p class="ob-sub">Chaal counts your steps with your phone's motion sensors, maps your runs and walks with GPS, and keeps every byte of data on your device. No account. No cloud. No ads.</p>
       <ul class="ob-points">
         <li><span class="ob-ico">◉</span> Sensor-powered step counting</li>
         <li><span class="ob-ico">◉</span> GPS run / walk / ride tracking</li>
@@ -36,7 +36,7 @@
     </section>
     <section class="ob-slide" data-slide="1">
       <h1>Enable <span class="lime">sensors</span></h1>
-      <p class="ob-sub">Stride needs two permissions to do its job. Nothing is uploaded anywhere.</p>
+      <p class="ob-sub">Chaal needs two permissions to do its job. Nothing is uploaded anywhere.</p>
       <div class="perm-card">
         <div class="perm-info">
           <div class="perm-title">Motion sensors</div>
@@ -85,7 +85,7 @@
 <!-- App -->
 <div id="app" hidden>
   <header id="topbar">
-    <div class="brand"><span class="brand-mark">S</span> STRIDE</div>
+    <div class="brand"><span class="brand-mark">C</span> CHAAL</div>
     <div class="top-right">
       <div id="todayDate" class="date"></div>
       <button id="sensorPill" class="pill" title="Step counter status"><span class="dot"></span><span id="pillText">Starting…</span></button>
@@ -117,6 +117,12 @@
         </div>
       </div>
 
+      <div class="streak-bar" id="streakBar" hidden>
+        <span>🔥 <b id="streakN">0</b> day streak</span>
+        <span class="streak-div"></span>
+        <span>🏆 <b id="achN">0</b>/<span id="achTotal">0</span></span>
+      </div>
+
       <button class="btn btn-big" id="btnStartWorkout">
         <span class="btn-ico">▶</span> Start a workout
       </button>
@@ -143,7 +149,7 @@
             <button class="chip" data-type="cycle">🚴 Ride</button>
             <button class="chip" data-type="gym">🏋️ Gym</button>
           </div>
-          <p class="hint">GPS tracks distance, pace and route for walk / run / ride. Keep the app open and the screen on — Stride will hold a wake lock.</p>
+          <p class="hint">GPS tracks distance, pace and route for walk / run / ride. Keep the app open and the screen on — Chaal will hold a wake lock.</p>
           <button class="btn btn-big btn-go" id="workoutStart">Start</button>
         </div>
         <div class="card">
@@ -177,6 +183,7 @@
           <canvas id="sumMap"></canvas>
           <div class="w-controls">
             <button class="btn btn-ghost" id="btnDiscardWorkout">Discard</button>
+            <button class="btn btn-ghost" id="btnShareWorkout">⤴ Share</button>
             <button class="btn" id="btnSaveWorkout">Save workout</button>
           </div>
         </div>
@@ -197,6 +204,10 @@
       <div class="card">
         <div class="card-title">Daily totals</div>
         <div id="dayList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Achievements</div>
+        <div id="achGrid" class="ach-grid"><div class="empty-note">Move to earn your first badge.</div></div>
       </div>
       <div class="card">
         <div class="card-title">Workout history</div>
@@ -271,8 +282,79 @@
       </div>
 
       <div class="card">
+        <div class="card-title">Voice coach</div>
+        <p class="hint">Spoken updates while you train — distance, time and pace.</p>
+        <div class="perm-row"><div><b>Voice announcements</b><div class="perm-status" id="voiceStatus">Off</div></div>
+          <label class="switch"><input type="checkbox" id="voiceEnabled"><span class="knob"></span></label></div>
+        <div class="field-row" style="margin-top:12px">
+          <label class="field"><span>Announce every</span>
+            <select id="voiceMode">
+              <option value="distance">Distance</option>
+              <option value="time">Time</option>
+            </select>
+          </label>
+          <label class="field" id="voiceDistRow"><span>Kilometres</span>
+            <select id="voiceDist">
+              <option value="0.5">0.5 km</option>
+              <option value="1" selected>1 km</option>
+              <option value="2">2 km</option>
+              <option value="5">5 km</option>
+            </select>
+          </label>
+          <label class="field" id="voiceTimeRow" hidden><span>Minutes</span>
+            <select id="voiceTime">
+              <option value="5" selected>5 min</option>
+              <option value="10">10 min</option>
+              <option value="15">15 min</option>
+              <option value="30">30 min</option>
+            </select>
+          </label>
+        </div>
+        <button class="btn btn-ghost btn-block" id="voiceTest">🔊 Test voice</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Workout types</div>
+        <p class="hint">Add your own — e.g. Badminton, Skating, Dance.</p>
+        <div id="customTypeList"></div>
+        <div class="field-row">
+          <label class="field"><span>Name</span>
+            <input type="text" id="newTypeName" placeholder="e.g. Badminton" maxlength="24">
+          </label>
+          <label class="field"><span>Icon</span>
+            <select id="newTypeIcon">
+              <option>🏋️</option><option>🧘</option><option>🏊</option><option>🚴</option>
+              <option>🏃</option><option>🤸</option><option>🥋</option><option>🧗</option>
+              <option>⛹️</option><option>🏸</option><option>⚽</option><option>💃</option>
+              <option>🚶</option><option>🏌️</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field"><span>Effort</span>
+            <select id="newTypeMet">
+              <option value="3">Light</option>
+              <option value="6" selected>Moderate</option>
+              <option value="9">Vigorous</option>
+            </select>
+          </label>
+          <label class="field check-field"><span>&nbsp;</span>
+            <label class="check"><input type="checkbox" id="newTypeGps" checked> Uses GPS</label>
+          </label>
+        </div>
+        <button class="btn btn-ghost btn-block" id="addTypeBtn">＋ Add workout type</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Health Connect</div>
+        <p class="hint">Sync steps and workouts to Android Health Connect.</p>
+        <div class="perm-row"><div><b>Status</b><div class="perm-status" id="hcStatus">Checking…</div></div>
+          <button class="btn btn-small" id="hcBtn" hidden>Connect</button></div>
+      </div>
+
+      <div class="card">
         <div class="card-title">App</div>
-        <button class="btn btn-ghost btn-block" id="installBtn" hidden>⬇ Install Stride on this phone</button>
+        <button class="btn btn-ghost btn-block" id="installBtn" hidden>⬇ Install Chaal on this phone</button>
         <div class="btn-row">
           <button class="btn btn-ghost" id="exportBtn">Export data</button>
           <button class="btn btn-ghost" id="importBtn">Import</button>
@@ -284,13 +366,13 @@
       <div class="card">
         <div class="card-title">Good to know</div>
         <div class="faq">
-          <details><summary>Does it count steps in the background?</summary><p>Web apps can't run motion sensors when closed or when the phone is locked — that's an Android limitation, not a Stride one. Keep Stride open (it holds your screen on during workouts) and it counts everything. For 24/7 background counting you'd need a native app like Google Fit.</p></details>
+          <details><summary>Does it count steps in the background?</summary><p>Web apps can't run motion sensors when closed or when the phone is locked — that's an Android limitation, not a Chaal one. Keep Chaal open (it holds your screen on during workouts) and it counts everything. For 24/7 background counting you'd need a native app like Google Fit.</p></details>
           <details><summary>Where is my data?</summary><p>Only on this phone, in the app's private storage. There is no server, no account, nothing uploaded. Export a JSON backup any time.</p></details>
-          <details><summary>Why does step counting need the screen on?</summary><p>Android pauses sensor access for web pages when the screen turns off. During workouts Stride requests a wake lock so the screen stays on.</p></details>
+          <details><summary>Why does step counting need the screen on?</summary><p>Android pauses sensor access for web pages when the screen turns off. During workouts Chaal requests a wake lock so the screen stays on.</p></details>
           <details><summary>How accurate is it?</summary><p>Step counting uses peak detection on the accelerometer — good for walking and running, roughly ±10%. GPS distance is accurate outdoors with a clear sky. Calorie numbers are estimates.</p></details>
         </div>
       </div>
-      <div class="version" id="appVersion">Stride v1.0 · self-hosted · your data stays on your phone</div>
+      <div class="version" id="appVersion">Chaal v1.1 · self-hosted · your data stays on your phone</div>
     </section>
   </main>
 
@@ -305,5 +387,6 @@
 
 <div id="toast"></div>
 <script src="app.js"></script>
+<script src="features.js"></script>
 </body>
 </html>

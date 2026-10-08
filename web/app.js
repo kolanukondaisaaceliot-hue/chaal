@@ -1,6 +1,6 @@
 'use strict';
 /* ============================================================
-   STRIDE — self-hosted fitness tracker
+   CHAAL — self-hosted fitness tracker
    All data stays on this device (localStorage). No servers.
    ============================================================ */
 
@@ -824,13 +824,13 @@ function wire() {
         DB.profile = Object.assign({}, DEFAULTS.profile, d.profile);
         saveDBNow(); renderSettings(); renderHome(); renderHistory(); renderLog();
         toast('Backup restored.');
-      } catch (err) { toast('That file is not a valid Stride backup.'); }
+      } catch (err) { toast('That file is not a valid Chaal backup.'); }
     };
     r.readAsText(f);
     e.target.value = '';
   };
   $('#eraseBtn').onclick = () => {
-    if (confirm('Erase ALL Stride data on this phone? This cannot be undone.')) {
+    if (confirm('Erase ALL Chaal data on this phone? This cannot be undone.')) {
       localStorage.removeItem(DB_KEY);
       location.reload();
     }
