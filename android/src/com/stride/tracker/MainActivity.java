@@ -18,7 +18,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Single-activity WebView shell hosting the Stride web app from local assets. */
+/** Single-activity WebView shell hosting the Chaal web app from local assets. */
 public class MainActivity extends Activity {
     private WebView web;
 
@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
                 && checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION)
                         != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this,
-                    "Stride needs the Activity Recognition permission to count steps.",
+                    "Chaal needs the Activity Recognition permission to count steps.",
                     Toast.LENGTH_LONG).show();
         }
     }

@@ -93,7 +93,7 @@ public class StepService extends Service implements SensorEventListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel ch = new NotificationChannel(
                     CH_ID, "Step counting", NotificationManager.IMPORTANCE_LOW);
-            ch.setDescription("Keeps Stride counting your steps in the background");
+            ch.setDescription("Keeps Chaal counting your steps in the background");
             getSystemService(NotificationManager.class).createNotificationChannel(ch);
         }
     }

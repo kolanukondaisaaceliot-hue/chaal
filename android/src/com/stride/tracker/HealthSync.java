@@ -40,13 +40,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Health Connect sync for Stride — writes daily steps and finished workouts.
+ * Health Connect sync for Chaal — writes daily steps and finished workouts.
  * Everything is best-effort and silent on failure: Health Connect may not be
  * installed, the user may deny permission, or the device may be offline.
  * Requires the user to opt in (Settings → Health Connect).
  */
 public class HealthSync {
-    private static final String TAG = "StrideHC";
+    private static final String TAG = "ChaalHC";
     private static final String PREFS = "stride_hc";
     private static final String KEY_ENABLED = "enabled";
 
@@ -194,7 +194,7 @@ public class HealthSync {
                     start, zoneOffset(start), end, zoneOffset(end),
                     meta("stride-workout-" + wid, 1),
                     exerciseTypeFor(type),
-                    "Stride " + type,
+                    "Chaal " + type,
                     null, null, null, (ExerciseRouteResult) null, null);
             records.add(session);
 
