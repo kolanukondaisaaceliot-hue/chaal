@@ -1,6 +1,6 @@
-# Stride — Your training, tracked by you
+# Chaal — Your training, tracked by you
 
-Stride is a **private, offline-first fitness tracker for Android**. No account, no
+Chaal is a **private, offline-first fitness tracker for Android**. No account, no
 sign-up, no cloud, no ads, no subscriptions — every step, workout, and stat stays
 on your phone and yours alone.
 
@@ -18,12 +18,18 @@ on your phone and yours alone.
   see steps, distance, active minutes, and calories at a glance.
 - **Weekly charts & 14-day history** — trends for steps, workouts, and calories.
 - **Export / import** — back up everything as JSON and restore it anytime.
+- **Streaks & achievements** — daily goal streaks and 12 unlockable badges (Early Bird, Marathoner, Triple Crown…).
+- **Shareable workout cards** — generate a polished PNG summary of any workout and share it anywhere.
+- **Voice coach** — spoken distance / time / pace updates while you train.
+- **Custom workout types** — add your own sports with per-type GPS and calorie settings.
+- **Health Connect sync** *(Android app)* — optionally push steps and workouts to Android Health Connect.
 
 ## How it works
 
 The Android app is a native shell (WebView) around the tracker, plus a
 **foreground service** that reads the hardware `TYPE_STEP_COUNTER` sensor — that
-is what keeps counting steps with the screen off. Phones without the hardware
+is what keeps counting steps with the screen off. The app UI reads the service's
+count directly, so background steps always show up. Phones without the hardware
 counter fall back to accelerometer-based peak detection. GPS workouts use your
 phone's location sensor.
 
@@ -35,11 +41,11 @@ The same tracker is also available as an installable **web app (PWA)** in `web/`
 
 ## Download & install
 
-1. Go to [**Releases**](https://github.com/kolanukondaisaaceliot-hue/stride/releases)
-   and download the latest `stride.apk`.
+1. Go to [**Releases**](https://github.com/kolanukondaisaaceliot-hue/chaal/releases)
+   and download the latest `chaal.apk`.
 2. Open the file on your phone. Android will ask you to allow "Install unknown
    apps" for your browser or file manager — allow it once.
-3. Open Stride, grant motion and location permissions when asked, and start moving.
+3. Open Chaal, grant motion and location permissions when asked, and start moving.
 
 Permissions used, and why: activity recognition + motion sensors (step counting),
 location (GPS workouts), foreground service (step counting with the screen off),
@@ -52,7 +58,7 @@ Prerequisites: JDK 17+, Android SDK with `platforms;android-34` and
 
 ```bash
 cd android
-bash build.sh        # produces stride.apk (debug key auto-generated on first run)
+bash build.sh        # produces chaal.apk (debug key auto-generated on first run)
 ```
 
 The build uses `aapt2`/`d8` directly — no Gradle needed. For a Play Store release
