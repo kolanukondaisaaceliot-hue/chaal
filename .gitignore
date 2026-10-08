@@ -1,0 +1,11 @@
+# Android build outputs
+android/build/
+android/stride.keystore
+android/*.apk
+android/*.aab
+android/*.apks
+
+# OS / editor
+.DS_Store
+*.swp
+*~
