@@ -117,5 +117,52 @@ public class MainActivity extends Activity {
                         WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             });
         }
+
+        // ---- Health Connect ----
+        @JavascriptInterface
+        public String getHealthStatus() {
+            if (!HealthSync.isAvailable(MainActivity.this)) return "unavailable";
+            if (!HealthSync.isEnabled(MainActivity.this)) return "disabled";
+            return HealthSync.hasPermissions(MainActivity.this) ? "ready" : "needs_permission";
+        }
+
+        @JavascriptInterface
+        public void setHealthSync(final boolean on) {
+            HealthSync.setEnabled(MainActivity.this, on);
+            if (on && HealthSync.isAvailable(MainActivity.this)) {
+                if (!HealthSync.hasPermissions(MainActivity.this)) {
+                    runOnUiThread(() -> {
+                        try {
+                            startActivityForResult(
+                                    HealthSync.permissionIntent(MainActivity.this), 2001);
+                        } catch (Exception e) {
+                            Toast.makeText(MainActivity.this,
+                                    "Could not open Health Connect permissions.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+                } else {
+                    HealthSync.syncStepsNow(MainActivity.this);
+                }
+            }
+        }
+
+        @JavascriptInterface
+        public void logWorkout(final String json) {
+            HealthSync.writeWorkout(MainActivity.this, json);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2001) {
+            boolean ok = HealthSync.parsePermissionResult(resultCode, data);
+            Toast.makeText(this,
+                    ok ? "Health Connect connected ✓ — syncing steps & workouts."
+                       : "Health Connect permission not granted.",
+                    Toast.LENGTH_LONG).show();
+            if (ok) HealthSync.syncStepsNow(this);
+        }
     }
 }

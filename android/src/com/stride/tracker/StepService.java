@@ -44,6 +44,7 @@ public class StepService extends Service implements SensorEventListener {
 
     private long lastNotifAt = 0;
     private int lastNotifCount = -1;
+    private long lastHcSync = 0;
 
     public static String today() {
         return new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
@@ -105,7 +106,7 @@ public class StepService extends Service implements SensorEventListener {
         Notification.Builder b = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 ? new Notification.Builder(this, CH_ID)
                 : new Notification.Builder(this);
-        return b.setContentTitle("Stride")
+        return b.setContentTitle("Chaal")
                 .setContentText(steps + " steps today - keep moving!")
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentIntent(pi)
@@ -120,6 +121,16 @@ public class StepService extends Service implements SensorEventListener {
             lastNotifCount = steps;
             NotificationManager nm = getSystemService(NotificationManager.class);
             if (nm != null) nm.notify(NOTIF_ID, buildNotif(steps));
+        }
+        maybeHcSync(steps, now);
+    }
+
+    /** Push today's count to Health Connect at most every 30 minutes. */
+    private void maybeHcSync(int steps, long now) {
+        if (now - lastHcSync < 30 * 60 * 1000) return;
+        lastHcSync = now;
+        if (HealthSync.isEnabled(this) && HealthSync.isAvailable(this)) {
+            HealthSync.writeSteps(this, steps, today());
         }
     }
 
